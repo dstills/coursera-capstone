@@ -18,6 +18,7 @@ angular.module('mapItApp')
   .controller('MapController', ['mapFactory', '$scope', function(mapFactory, $scope) {
       console.log('MapController');
       // Set View configurations
+      // TODO: Resolve these values first, then assign to this object
       this.viewOptions = {
         ui: {
           components: ['zoom', 'compass']
@@ -35,7 +36,7 @@ angular.module('mapItApp')
         mapFactory.getLoadedWidgets().then(function(widgets) {
           for (var i = 0; i < widgets.length; i++) {
             var widget = widgets[i];
-            var name = nameOf(widget);
+            var name = widget.id.split('_')[2].toLowerCase();
             var pos;
             widget.view = view;
             switch (name) {
@@ -50,22 +51,20 @@ angular.module('mapItApp')
                 break;
             }
             view.ui.add(widget, pos);
-            console.log(name + ' widget added to the '+ pos + ' of the UI!');
           }
         });
-        view.on('layerview-create', function(layerView) {
-          console.log('layerview =>', layerView);
-        });
-      };
+      }.bind(this);
 
       // Add the map to the controller from the mapFactory
       mapFactory.getLoadedMap().then(function(map) {
         this.map = map;
       }.bind(this));
 
-      function nameOf(widget) {
-        return widget.id.split('_')[2].toLowerCase();
-      }
+      mapFactory.getLayers();
+      // .then(function(layers) {
+      //   console.log(layers);
+      //   this.map.addMany( layers );
+      // }.bind(this));
   }])
 
 ;

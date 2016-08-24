@@ -9,33 +9,12 @@ angular.module('mapItApp')
   .constant('baseURL', 'http://localhost:3000')
 
   // Map Factory
+  // TODO: Need to design so that each individual geometry doesn't get it's own feature class
   .factory('mapFactory', ['$resource', 'baseURL', 'esriLoader', '$q', function($resource, baseURL, esriLoader, $q) {
 
     var mapFactory = {};
     var mapDeferred = $q.defer();
-    var layersDeferred = $q.defer();
-    // TEST LAYER. This object is the shape of the point layer objects that will be stored on the server.
-    var dummyGraphics = [{
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-121.500, 38.500]
-      },
-      "properties": {
-        "FID": 0,
-        "name": "Sacramento"
-      }
-    }, {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [-121.500, 38.600]
-      },
-      "properties": {
-        "FID": 1,
-        "name": "Sacramento_N"
-      }
-    }];
+    // 'dummy' objects will be stored as configuration objects in production, either from resolve objects in the app.config or resources from a server
 
     var dummyWidgets = [{
       "path": "esri/widgets/Locate",
@@ -45,69 +24,132 @@ angular.module('mapItApp')
       "params": {}
     }];
 
-    // var convertToArcGIS = function(geometry) {
-    //   return Terraformer.ArcGIS.convert(geometry);
-    // };
+    var dummyMapOptions = {
+      'basemap': 'streets',
+      'ground': 'world-elevation'
+    };
+
+    var convertToArcGISFieldType = function(value) {
+      if (typeof value === 'number') {
+        // Check if the number is an integer or decimal
+        if (value % 1 === 0) {
+          var length = value.toString().length;
+          if (length >= 12 && length < 14) {
+            return 'date';
+          }
+          return 'integer';
+        }
+        return 'double';
+      }
+
+      if (typeof value === 'string' || typeof value === 'boolean') {
+        return 'string';
+      }
+      return typeof value;
+    };
 
     var createMap = function() {
-      esriLoader.require([
-        'esri/Map',
-        'esri/layers/FeatureLayer',
-        'esri/layers/support/Field',
-        'esri/geometry/Point',
-        'esri/renderers/SimpleRenderer',
-        'esri/symbols/SimpleMarkerSymbol',
-        'dojo/_base/array'
-      ], function(
-        Map,
-        FeatureLayer,
-        Field,
-        Point,
-        SimpleRenderer,
-        SimpleMarkerSymbol,
-        array
-      ) {
-        var renderer = new SimpleRenderer({
-          symbol: SimpleMarkerSymbol()
-        });
-        var graphics = array.map(dummyGraphics, function(graphic, i) {
+      esriLoader.require(['esri/Map'], function(Map) {
+        var map = new Map( dummyMapOptions );
+        mapDeferred.resolve( map );
+      });
+    };
+
+    var createJSONFeatureObject = function(feature) {
+      feature.geometryType = feature.geometry.type;
+      feature.geometry = Terraformer.ArcGIS.convert( feature.geometry );
+      return feature;
+    };
+
+    var getLayer = function(url) {
+      return $resource(url, null, {getAll: {method: 'GET', isArray: false}}).getAll().$promise;
+    };
+
+    var createLayer = function(url) {
+      var layerDeferred = $q.defer();
+      getLayer(url).then(function(response) {
+        var features = response.features.map( createJSONFeatureObject );
+        console.log('features',features);
+        var fields = Object.entries(features[0].properties).map(function(item) { // Might be unsafe to assume all features have the same fields, grabbing the first to build the fields object might be bad idea
+          var key = item[0];
+          var value = item[1];
+          var type = convertToArcGISFieldType(value);
           return {
-            geometry: new Point({
-              x: graphic.geometry.coordinates[0],
-              y: graphic.geometry.coordinates[1]
-            }),
-            attributes: {
-              ObjectID: graphic.properties.FID,
-              title: graphic.properties.name,
-              type: 'point'
-            }
+            name: key.toUpperCase().slice(0, 11),
+            alias: key,
+            type: type
           };
         });
-        var featureLayer = new FeatureLayer({
-          source: graphics,
-          objectIdField: 'ObjectID',
-          renderer: renderer,
-          spatialReference: {
-            wkid: 4326
-          },
-          geometryType: 'point',
-          fields: [{
-            name: 'ObjectID',
-            alias: 'ObjectID',
-            type: 'oid'
-          }, {
-            name: 'title',
-            alias: 'title',
-            type: 'string'
-          }]
+        fields.unshift({
+          name: 'FID',
+          alias: 'FID',
+          type: 'oid'
         });
-        var map = new Map({
-          basemap: 'streets',
-          ground: 'world-elevation'
+        console.log('fields',fields);
+
+        esriLoader.require([
+          'esri/core/Collection',
+          'esri/Graphic',
+          'esri/layers/Layer',
+          'esri/layers/FeatureLayer',
+          'esri/layers/support/Field',
+          'esri/geometry/Multipoint',
+          'esri/geometry/Point',
+          'esri/geometry/Polyline',
+          'esri/geometry/Polygon',
+          'esri/geometry/SpatialReference',
+          'esri/renderers/SimpleRenderer',
+          'esri/symbols/SimpleMarkerSymbol',
+          'esri/symbols/SimpleLineSymbol',
+          'esri/symbols/SimpleFillSymbol'
+        ], function(
+          Collection, Graphic, Layer, FeatureLayer, Field, Multipoint, Point, Polyline, Polygon, SpatialReference, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol
+        ) {
+          var featureLayer;
+          var renderer = new SimpleRenderer({
+            symbol: new SimpleMarkerSymbol()
+          });
+          var spatialReference = new SpatialReference({ wkid: 4326 });
+          var graphics = features.map(function(feature, idx) {
+            var geometry;
+            var attributes = feature.properties;
+            attributes['FID'] = idx;
+            // Assign the geometry object based on the geometry type
+            switch (feature.geometryType) {
+              case 'Point':
+                geometry = new Point(feature.geometry);
+                break;
+              case 'MultiPoint':
+                geometry = new Multipoint(feature.geometry);
+                break;
+              case 'LineString':
+                geometry = new Polyline(feature.geometry);
+                break;
+              case 'Polygon':
+                geometry = new Polygon(feature.geometry);
+                break;
+              default:
+                break;
+            }
+            return {
+              geometry: geometry,
+              attributes: attributes
+            };
+          });
+          // TODO: IN FUTURE, ACCOMODATE ALL GEOMETRY TYPES
+          featureLayer = new FeatureLayer({
+            source: graphics,
+            objectIdField: 'FID',
+            renderer: renderer,
+            spatialReference: spatialReference,
+            geometryType: 'point',
+            fields: fields
+          });
+          console.log('featureLayer', featureLayer);
+          layerDeferred.resolve(featureLayer);
         });
-        map.add(featureLayer);
-        mapDeferred.resolve(map);
       });
+      return layerDeferred.promise;
     };
 
     var createWidget = function(path, params) {
@@ -119,12 +161,6 @@ angular.module('mapItApp')
       return widgetDeferred.promise;
     };
 
-    // var createLayers = function(params) {
-    //   esriLoader.require(['esri/layers/GraphicsLayer', 'esri/Graphic'], function(GraphicsLayer, Graphic) {
-
-    //   });
-    // };
-
     mapFactory.getLoadedMap = function() {
       return mapDeferred.promise;
     };
@@ -134,11 +170,14 @@ angular.module('mapItApp')
         createWidget('esri/widgets/Search', null)
       ]);
     };
-    // mapFactory.getLayers = function() {
-    //   return $q.all([
-    //     createLayer({})
-    //   ]);
-    // };
+    mapFactory.getLayers = function() {
+      var lyr = createLayer('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
+      console.log(lyr);
+      lyr.then(function(l) {console.log('l',l);});
+      // return $q.all([
+      //   createLayer('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
+      // ]);
+    };
 
     createMap();
 
