@@ -29,6 +29,14 @@ angular.module('mapItApp')
       'ground': 'world-elevation'
     };
 
+    var mapConfig = {
+      options: {
+        basemap: 'streets',
+        ground: 'world-elevation'
+      },
+      url:'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson'
+    };
+
     var convertToArcGISFieldType = function(value) {
       if (typeof value === 'number') {
         // Check if the number is an integer or decimal
@@ -61,56 +69,61 @@ angular.module('mapItApp')
       return feature;
     };
 
-    var getLayer = function(url) {
-      return $resource(url, null, {getAll: {method: 'GET', isArray: false}}).getAll().$promise;
-    };
-
-    var createLayer = function(url) {
-      var layerDeferred = $q.defer();
-      getLayer(url).then(function(response) {
-        var features = response.features.map( createJSONFeatureObject );
-        console.log('features',features);
-        var fields = Object.entries(features[0].properties).map(function(item) { // Might be unsafe to assume all features have the same fields, grabbing the first to build the fields object might be bad idea
-          var key = item[0];
-          var value = item[1];
-          var type = convertToArcGISFieldType(value);
-          return {
-            name: key.toUpperCase().slice(0, 11),
-            alias: key,
-            type: type
-          };
-        });
-        fields.unshift({
-          name: 'FID',
-          alias: 'FID',
-          type: 'oid'
-        });
-        console.log('fields',fields);
-
-        esriLoader.require([
-          'esri/core/Collection',
-          'esri/Graphic',
-          'esri/layers/Layer',
-          'esri/layers/FeatureLayer',
-          'esri/layers/support/Field',
-          'esri/geometry/Multipoint',
-          'esri/geometry/Point',
-          'esri/geometry/Polyline',
-          'esri/geometry/Polygon',
-          'esri/geometry/SpatialReference',
-          'esri/renderers/SimpleRenderer',
-          'esri/symbols/SimpleMarkerSymbol',
-          'esri/symbols/SimpleLineSymbol',
-          'esri/symbols/SimpleFillSymbol'
-        ], function(
-          Collection, Graphic, Layer, FeatureLayer, Field, Multipoint, Point, Polyline, Polygon, SpatialReference, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol
-        ) {
+    var init = function(mapConfig) {
+      esriLoader.require([
+        'esri/Map',
+        'esri/PopupTemplate',
+        'esri/Graphic',
+        'esri/core/Collection',
+        'esri/layers/Layer',
+        'esri/layers/FeatureLayer',
+        'esri/layers/support/Field',
+        'esri/geometry/Multipoint',
+        'esri/geometry/Point',
+        'esri/geometry/Polyline',
+        'esri/geometry/Polygon',
+        'esri/geometry/SpatialReference',
+        'esri/renderers/SimpleRenderer',
+        'esri/symbols/SimpleMarkerSymbol',
+        'esri/symbols/SimpleLineSymbol',
+        'esri/symbols/SimpleFillSymbol'
+      ], function(
+        esriMap, PopupTemplate, Graphic, Collection, Layer, FeatureLayer, Field, Multipoint, Point, Polyline, Polygon, SpatialReference, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol
+      ) {
+        $resource(mapConfig.url, null, {getAll: {method: 'GET', isArray: false}}).get().$promise.then(function(response) {
+          var features = response.features.map( createJSONFeatureObject );
+          var fields = Object.entries(features[0].properties).map(function(item) { // Might be unsafe to assume all features have the same fields, grabbing the first to build the fields object might be bad idea
+            var key = item[0];
+            var value = item[1];
+            var type = convertToArcGISFieldType(value);
+            return {
+              name: key.toUpperCase().slice(0, 11),
+              alias: key,
+              type: type
+            };
+          });
+          fields.unshift({
+            name: 'FID',
+            alias: 'FID',
+            type: 'oid'
+          });
           var featureLayer;
           var renderer = new SimpleRenderer({
-            symbol: new SimpleMarkerSymbol()
+            symbol: new SimpleMarkerSymbol({
+              outline: {
+                color: [255,0,0],
+                width: '0.5px'
+              },
+              color: [0,255,0],
+              size: 6
+            })
           });
           var spatialReference = new SpatialReference({ wkid: 4326 });
-          var graphics = features.map(function(feature, idx) {
+          var popupTemplate = new PopupTemplate({
+            title: '{PLACE}',
+            content: '{MAG}'
+          });
+          var graphics = response.features.map(function(feature, idx) {
             var geometry;
             var attributes = feature.properties;
             attributes['FID'] = idx;
@@ -143,13 +156,16 @@ angular.module('mapItApp')
             renderer: renderer,
             spatialReference: spatialReference,
             geometryType: 'point',
-            fields: fields
+            fields: fields,
+            popupTemplate: popupTemplate,
+            outFields: ['MAG', 'PLACE']
           });
-          console.log('featureLayer', featureLayer);
-          layerDeferred.resolve(featureLayer);
+          mapConfig.options.layers = [featureLayer];
+          var map = new esriMap(mapConfig.options);
+          console.log(map.layers);
+          mapDeferred.resolve(map);
         });
       });
-      return layerDeferred.promise;
     };
 
     var createWidget = function(path, params) {
@@ -170,16 +186,9 @@ angular.module('mapItApp')
         createWidget('esri/widgets/Search', null)
       ]);
     };
-    mapFactory.getLayers = function() {
-      var lyr = createLayer('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
-      console.log(lyr);
-      lyr.then(function(l) {console.log('l',l);});
-      // return $q.all([
-      //   createLayer('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson')
-      // ]);
-    };
 
-    createMap();
+    // Figure out what the fuck is up with resolves not working and put all these static values in resolve
+    init(mapConfig);
 
     return mapFactory;
 

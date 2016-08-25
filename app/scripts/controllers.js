@@ -15,7 +15,7 @@ angular.module('mapItApp')
   }])
 
   // MapController
-  .controller('MapController', ['mapFactory', '$scope', function(mapFactory, $scope) {
+  .controller('MapController', ['mapFactory', '$scope', 'esriLoader', function(mapFactory, $scope, esriLoader) {
       console.log('MapController');
       // Set View configurations
       // TODO: Resolve these values first, then assign to this object
@@ -59,12 +59,6 @@ angular.module('mapItApp')
       mapFactory.getLoadedMap().then(function(map) {
         this.map = map;
       }.bind(this));
-
-      mapFactory.getLayers();
-      // .then(function(layers) {
-      //   console.log(layers);
-      //   this.map.addMany( layers );
-      // }.bind(this));
   }])
 
 ;
