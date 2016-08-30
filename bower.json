@@ -22,6 +22,10 @@
     "angular-mocks": "^1.5.8",
     "angular-esri-map": "^2.0.0",
     "terraformer": "^1.0.6",
-    "terraformer-arcgis-parser": "^1.0.5"
+    "terraformer-arcgis-parser": "^1.0.5",
+    "terraformer-geostore": "^1.0.2",
+    "terraformer-geostore-rtree": "^1.0.0",
+    "terraformer-geostore-memory": "^1.0.0",
+    "terraformer-geostore-localstorage": "^1.0.0"
   }
 }

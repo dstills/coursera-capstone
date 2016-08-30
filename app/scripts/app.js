@@ -13,14 +13,14 @@ angular.module('mapItApp', ['ui.router', 'ngResource','esri.core', 'esri.map'])
         url: '/',
         views: {
           'header': {
-            templateUrl: 'views/header.html'
+            templateUrl: 'views/shared/header.html'
           },
           'content': {
-            templateUrl: 'views/home.html',
+            templateUrl: 'views/home/content.html',
             controller: 'IndexController'
           },
           'footer': {
-            templateUrl: 'views/footer.html'
+            templateUrl: 'views/shared/footer.html'
           }
         }
       })
@@ -30,7 +30,7 @@ angular.module('mapItApp', ['ui.router', 'ngResource','esri.core', 'esri.map'])
         url: 'about',
         views: {
           'content@': {
-            templateUrl: 'views/about.html',
+            templateUrl: 'views/about/content.html',
             controller: 'AboutController'
           }
         }
@@ -41,7 +41,7 @@ angular.module('mapItApp', ['ui.router', 'ngResource','esri.core', 'esri.map'])
         url: 'contact',
         views: {
           'content@': {
-            templateUrl: 'views/contact.html',
+            templateUrl: 'views/contact/content.html',
             controller: 'ContactController'
           }
         }
@@ -50,10 +50,19 @@ angular.module('mapItApp', ['ui.router', 'ngResource','esri.core', 'esri.map'])
       // Map
       .state('app.map', {
         url: 'map',
+        resolve: {
+          layerUrls: function() {
+            return {value: ['http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson', 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson']}
+          }
+        },
         views: {
           'content@': {
-            templateUrl: 'views/map.html',
+            templateUrl: 'views/map/content.html',
             controller: 'MapController as vm'
+          },
+          'sidebar@': {
+            templateUrl: 'views/map/sidebar.html',
+            controller: 'SidebarController'
           }
         }
       })

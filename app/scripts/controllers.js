@@ -15,8 +15,8 @@ angular.module('mapItApp')
   }])
 
   // MapController
-  .controller('MapController', ['mapFactory', '$scope', 'esriLoader', function(mapFactory, $scope, esriLoader) {
-      console.log('MapController');
+  .controller('MapController', ['mapFactory', '$scope', 'esriLoader', 'layerUrls', function(mapFactory, $scope, esriLoader, layerUrls) {
+      console.log('MapController', layerUrls);
       // Set View configurations
       // TODO: Resolve these values first, then assign to this object
       this.viewOptions = {
@@ -59,6 +59,12 @@ angular.module('mapItApp')
       mapFactory.getLoadedMap().then(function(map) {
         this.map = map;
       }.bind(this));
+      mapFactory.addLayers(layerUrls.value);
+      mapFactory.addLayer('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson');
+  }])
+
+  .controller('SidebarController', ['mapFactory', '$scope', function(mapFactory, $scope) {
+    
   }])
 
 ;
