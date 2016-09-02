@@ -29,11 +29,13 @@ angular.module('mapItApp')
 
   // MapController
   .controller('MapController', ['$scope', 'esriLoader', 'geoService', 'viewOptions', function($scope, esriLoader, geoService, viewOptions) {
-    console.log('MapController', viewOptions);
+    console.log('MapController');
+    $scope.editButtonModel = '';
     this.viewOptions = viewOptions.value;
 
     this.onViewCreated = function(view) {
       console.log(view);
+      this.view = view;
       view.ui.move('zoom', 'top-right');
       view.ui.move('compass', 'top-right');
     };
@@ -48,6 +50,30 @@ angular.module('mapItApp')
 
   .controller('SidebarController', ['$scope', function($scope) {
     console.log('SidebarController');
+    var idCount = 0;
+    $scope.isOpen = false;
+    $scope.panels = [{
+      title: 'First',
+      text: 'This is the first panel',
+      widgetName: 'measure'
+    }, {
+      title: 'Second',
+      text: 'This is the second panel',
+      widgetName: 'name'
+    }];
+    $scope.panels.map(function(panel) {
+      panel.id = idCount;
+      panel.isOpen = false;
+      idCount++;
+      return panel;
+    });
+  }])
+
+  .controller('MyEditButtonsController', ['$scope', function($scope) {
+    console.log('MyEditButtonsController');
+    this.setView = function() {
+
+    }
   }])
 
 ;

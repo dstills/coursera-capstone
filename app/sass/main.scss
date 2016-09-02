@@ -1,3 +1,17 @@
+// VARIABLES
+
+// DIMENTIONS
+$footer-height: 22px;
+$navbar-height: 50px;
+$sidebar-width: 20%;
+$sidebar-toggle-height: 20px;
+
+// COLOR
+$primary-color: rgb(0, 150, 255);
+$secondary-color: rgb(255, 150, 0);
+$emphasis-color: rgb(50,50,50);
+$muted-color: rgb(255,255,255);
+
 .nav, .pagination, .carousel, .panel-title a {
   cursor: pointer;
 }
@@ -9,7 +23,15 @@ html, body, .esri-view {
 }
 /*base styles for all views*/
 .navigation {
-
+  background-color: $primary-color;
+  opacity: 0.85;
+  .navbar-toggle {
+    font-size: 17pt;
+    padding: 0 1px;
+  }
+  a {
+    color: $emphasis-color;
+  }
 }
 .content {
   position: absolute;
@@ -17,17 +39,68 @@ html, body, .esri-view {
   bottom: 0;
   left: 0;
   right: 0;
-  padding-top: 50px;
-  padding-bottom: 22px;
+  padding-top: $navbar-height;
+  padding-bottom: $footer-height;
 }
 .jumbotron {
+    background-color: $secondary-color;
     text-align: center;
   }
 .map-content {
   .map-map {
     height: 100%;
+    z-index: 1;
+    .map-map-buttons {
+      position: absolute;
+      right: 15px;
+      bottom: $footer-height + 15px;;
+      z-index: 2;
+      .btn {
+        font-size: 16pt;
+        width: 50px;
+      }
+      .add {
+
+      }
+      .remove {
+
+      }
+    }
   }
   .map-sidebar {
+    position: fixed;
+    left: 0;
+    top: $navbar-height;
+    bottom: $footer-height;
+    width: $sidebar-width;
+    z-index: 2;
+    .map-sidebar-toggle {
+      border-radius: 0;
+      height: $sidebar-toggle-height;
+      font: bold 10px monospace;
+      background-color: $secondary-color;
+    }
+    .panel-group {
+      border-radius: 0;
+      border-right: 1px solid $muted-color;
+      background-color: $primary-color;
+      margin: 0;
+      .panel {
+        margin: 0;
+        border-radius: 0;
+        .panel-heading {
+          .panel-title {
+            .accordion-toggle {
+            }
+          }
+        }
+      }
+      .panel-collapse {
+        .panel-body {
+
+        }
+      }
+    }
   }
 }
 .about-content {
@@ -45,5 +118,5 @@ html, body, .esri-view {
   left: 0;
   right: 0;
   border: 1px solid black;
-  height: 22px;
+  height: $footer-height;
 }
