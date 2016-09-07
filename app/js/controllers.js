@@ -35,9 +35,9 @@ angular.module('mapItApp')
 
     this.onViewCreated = function(view) {
       console.log(view);
-      this.view = view;
       view.ui.move('zoom', 'top-right');
       view.ui.move('compass', 'top-right');
+      this.view = view;
     };
 
     esriLoader.require(['esri/Map'], function(Map) {
@@ -46,6 +46,9 @@ angular.module('mapItApp')
         ground: 'world-elevation'
       });
     }.bind(this));
+
+
+
   }])
 
   .controller('SidebarController', ['$scope', function($scope) {
@@ -71,9 +74,6 @@ angular.module('mapItApp')
 
   .controller('MyEditButtonsController', ['$scope', function($scope) {
     console.log('MyEditButtonsController');
-    this.setView = function() {
-
-    }
   }])
 
 ;

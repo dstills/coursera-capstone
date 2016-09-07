@@ -31,16 +31,39 @@
   angular.module('esri.map')
     .directive('myEditButtons', function() {
       return {
+        require: '^^esriSceneView',
         template: 
         '<div class="map-map-buttons btn-group">'+
-          '<label class="btn btn-success" uib-btn-radio="\'Left\'" ng-model="editButtonModel" ng-click="editButtonsCtrl.setView()" uncheckable><i class="fa fa-map-marker"></i></label>'+
+          '<label class="btn btn-success" uib-btn-radio="\'Left\'" ng-model="editButtonModel" uncheckable><i class="fa fa-map-marker"></i></label>'+
           '<label class="btn btn-danger" uib-btn-radio="\'Right\'" ng-model="editButtonModel" uncheckable><i class="fa fa-eraser"></i></label>'+
         '</div>',
         restrict: 'E',
-        controller: 'MyEditButtonsController as editButtonsCtrl',
-        bindToController: true,
-        link: function myEditButtonsLink(scope, element, attrs, controller) {
-          console.log(scope, element, attrs, controller);
+        scope: {
+          view: '@'
+        },
+        link: function (scope, element, attrs, vm) {
+          console.log(scope, element, attrs, vm);
+          element.on('click', function(e) {
+            var btnClicked = scope.editButtonModel;
+            if (btnClicked === 'Left') {
+              var handle = vm.view.on('click', function(e) {
+                var point = e.mapPoint;
+                scope.editButtonModel = '';
+                scope.$digest();
+                handle.remove();
+              });
+            } else if (btnClicked === 'Right') {
+              var handle = vm.view.on('click', function(e) {
+                var point = 
+                console.log('Point removed: ',[e.mapPoint.x, e.mapPoint.y, e.mapPoint.z]);
+                scope.editButtonModel = '';
+                scope.$digest();
+                handle.remove();
+              });
+            } else {
+              return;
+            }
+          });
         }
       };
     })
