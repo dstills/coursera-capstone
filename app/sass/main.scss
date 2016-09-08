@@ -29,6 +29,15 @@ html, body, .esri-view {
     font-size: 17pt;
     padding: 0 1px;
   }
+  .navbar-brand {
+    text-align: center;
+    img, span {
+      float: left;
+    }
+    img {
+      margin: -10px 15px 0 0;
+    }
+  }
   a {
     color: $emphasis-color;
   }

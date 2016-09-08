@@ -1,7 +1,0 @@
-{
-  "name": "coursera-capstone-server",
-  "main": "index.js",
-  "engines": {
-    "node": ">=0.10.0"
-  }
-}

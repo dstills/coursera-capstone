@@ -48,14 +48,15 @@
             if (btnClicked === 'Left') {
               var handle = vm.view.on('click', function(e) {
                 var point = e.mapPoint;
+                console.log(point);
                 scope.editButtonModel = '';
                 scope.$digest();
                 handle.remove();
               });
             } else if (btnClicked === 'Right') {
               var handle = vm.view.on('click', function(e) {
-                var point = 
-                console.log('Point removed: ',[e.mapPoint.x, e.mapPoint.y, e.mapPoint.z]);
+                var point = e.mapPoint;
+                console.log(point);
                 scope.editButtonModel = '';
                 scope.$digest();
                 handle.remove();
