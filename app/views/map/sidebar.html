@@ -1,3 +1,16 @@
-<div class="sidebar app-map-sidebar">
-
-</div>
+<button type="button" class="btn btn-block map-sidebar-toggle" ng-click="isOpen = !isOpen">
+  Tools <i class="fa" ng-class="{'fa-chevron-down': isOpen, 'fa-chevron-right': !isOpen}"></i>
+</button>
+<!-- <div class="sidebar-accordion"></div> -->
+<uib-accordion class="sidebar-accordion" close-others="true" ng-show="isOpen">
+  <div class="panel-group">
+    <div uib-accordion-group id="{{panel.id}}" class="panel panel-default" ng-repeat="panel in panels">
+      <uib-accordion-heading>
+        <a role="presentation" class="panel-title" ng-click="panel.isOpen = !panel.isOpen">
+          {{panel.title}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': panel.isOpen, 'glyphicon-chevron-right': !panel.isOpen}"></i>
+        </a>
+      </uib-accordion-heading>
+      <div id="{{panel.widgetName}}">{{panel.widgetName}}</div>
+    </div>
+  </div>
+</uib-accordion>

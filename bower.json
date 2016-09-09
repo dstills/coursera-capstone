@@ -1,5 +1,5 @@
 {
-  "name": "map-it",
+  "name": "coursera-capstone",
   "version": "1.0.0",
   "description": "capstone project",
   "main": "index.html",
@@ -26,6 +26,7 @@
     "terraformer-geostore": "^1.0.2",
     "terraformer-geostore-rtree": "^1.0.0",
     "terraformer-geostore-memory": "^1.0.0",
-    "terraformer-geostore-localstorage": "^1.0.0"
+    "terraformer-geostore-localstorage": "^1.0.0",
+    "angular-bootstrap": "^2.1.3"
   }
 }

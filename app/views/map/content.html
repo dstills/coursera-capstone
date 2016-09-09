@@ -1,3 +1,4 @@
-<div class="container-fluid app-map-content">
-  <esri-scene-view map="vm.map" on-create="vm.onViewCreated" view-options="vm.viewOptions"></esri-scene-view>
+<div class="content map-content">
+  <div ui-view="sidebar" class="map-sidebar"></div>
+  <div ui-view="map" class="map-map"></div>
 </div>

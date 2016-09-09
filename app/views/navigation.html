@@ -1,0 +1,32 @@
+<nav class="navigation navbar navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" ng-click="isCollapsed = !isCollapsed">
+        <span class="sr-only">Toggle navigation</span>
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </button>
+      <a role="button" class="navbar-brand" ui-sref="app">
+        <img height="41px" src="images/logo.png"/><span>Application Title</span>
+      </a>
+    </div>
+    <div id="navbar-links" class="navbar-collapse" uib-collapse="isCollapsed">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a ui-sref="app">
+          <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home
+        </a></li>
+        <li><a ui-sref="app.about">
+          <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> About
+        </a></li>
+        <li><a ui-sref="app.contact">
+          <i class="fa fa-envelope-o" aria-hidden="true"></i> Contact
+        </a></li>
+        <li><a ui-sref="app.table">
+          <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Table
+        </a></li>
+        <li><a ui-sref="app.map">
+          <span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Map
+        </a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
