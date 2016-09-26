@@ -28,7 +28,7 @@ angular.module('mapItApp')
   }])
 
   // MapController
-  .controller('MapController', ['$scope', 'esriLoader', 'geoService', 'viewOptions', function($scope, esriLoader, geoService, viewOptions) {
+  .controller('MapController', ['$scope', 'esriLoader', 'geoService', 'viewOptions', '$q', function($scope, esriLoader, geoService, viewOptions, $q) {
     console.log('MapController');
     $scope.editButtonModel = '';
     this.viewOptions = viewOptions.value;
@@ -40,11 +40,22 @@ angular.module('mapItApp')
       this.view = view;
     };
 
-    esriLoader.require(['esri/Map'], function(Map) {
-      this.map = new Map({
+    esriLoader.require([
+        'esri/Map', 'dojo/_base/array', 'esri/layers/FeatureLayer', 'esri/layers/GraphicsLayer', 'esri/geometry/SpatialReference'
+      ], function(Map, array, FeatureLayer, GraphicsLayer, SpatialReference) {
+      var map = new Map({
         basemap:'topo',
         ground: 'world-elevation'
       });
+      // geoService.getFeatures().query().$promise.then(function(features) {
+      //   var graphics = array.map(features, function(feature) {
+      //     return Terraformer.ArcGIS.convert(feature);
+      //   });
+      //   console.log(graphics);
+      //   map.add(new GraphicsLayer({
+      //     graphics: graphics
+      //   }));
+      // }.bind(this));
     }.bind(this));
 
 

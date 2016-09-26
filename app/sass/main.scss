@@ -56,6 +56,11 @@ html, body, .esri-view {
     text-align: center;
   }
 .map-content {
+  .map-modal-properties {
+    height: 500px;
+    width: 500px;
+    border: 6px solid green !important;
+  }
   .map-map {
     height: 100%;
     z-index: 1;
