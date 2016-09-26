@@ -70,7 +70,7 @@ gulp.task('copyfonts', ['clean'], function() {
 
 gulp.task('sass', function() {
   return gulp.src('app/sass/**/*.scss')
-    .pipe(sass({outputStyle:'compressed'}).on('error', sass.logError))
+    .pipe(sass({outputStyle:'compressed', includePaths:['http://js.arcgis.com/esri/css/']}).on('error', sass.logError))
     .pipe(gulp.dest('app/css'));
 });
 

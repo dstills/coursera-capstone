@@ -1,3 +1,5 @@
+// IMPORTS
+
 // VARIABLES
 
 // DIMENTIONS
@@ -115,6 +117,9 @@ html, body, .esri-view {
         }
       }
     }
+  }
+  .esri-popup--is-docked {
+    margin-right: 57px;
   }
 }
 .about-content {

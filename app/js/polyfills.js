@@ -42,11 +42,17 @@
               view: '@'
             },
             link: function (scope, element, attrs, vm) {
-              console.log(scope, element, attrs, vm);
               element.on('click', function(e) {
                 var btnClicked = scope.editButtonModel;
-                if (btnClicked === 'Left') {
-                  var handle = vm.view.on('click', function(e) {
+                console.log(btnClicked);
+                if (btnClicked === null) {
+                  scope.editButtonModel = '';
+                  scope.$digest();
+                  handle = null;
+                  return;
+                }
+                var handle = vm.view.on('click', function(e) {
+                  if (btnClicked === 'Left') {
                     var point = {};
                     point.geometry = Terraformer.ArcGIS.parse({
                       x: e.mapPoint.x,
@@ -71,32 +77,71 @@
                     };
                     var features = geoService.getFeatures();
                     features.query(function(arg) {
+                      point.type = "Feature";
                       features.add(point);
                       console.log(features);
                     });
-                    console.log(point);
-                    scope.editButtonModel = '';
-                    scope.$digest();
-                    handle.remove();
-                  });
-                } else if (btnClicked === 'Right') {
-                  var handle = vm.view.on('click', function(e) {
-                    var point = {};
-                    point.geometry = Terraformer.ArcGIS.parse({
-                      x: e.mapPoint.x,
-                      y: e.mapPoint.y,
-                      spatialReference: {
-                        wkid: e.mapPoint.spatialReference.wkid
-                      }
-                    });
-                    console.log(point);
-                    scope.editButtonModel = '';
-                    scope.$digest();
-                    handle.remove();
-                  });
-                } else {
-                  return;
-                }
+                  } else if (btnClicked === 'Right') {
+                    console.log('Select point at ', e.mapPoint);
+                  }
+                  scope.editButtonModel = '';
+                  scope.$digest();
+                  handle.remove();
+                });
+                // var btnClicked = scope.editButtonModel;
+                // if (btnClicked === 'Left') {
+                //   var handle = vm.view.on('click', function(e) {
+                //     var point = {};
+                //     point.geometry = Terraformer.ArcGIS.parse({
+                //       x: e.mapPoint.x,
+                //       y: e.mapPoint.y,
+                //       spatialReference: {
+                //         wkid: e.mapPoint.spatialReference.wkid
+                //       }
+                //     });
+                //     $uibModal.open({
+                //       templateUrl: '../views/map/modal.html',
+                //       controller: function() {
+                //         var $ctrl = this;
+
+                //         $ctrl.close = function() {
+                //           $uibModal.dismiss('cancel');
+                //         };
+                //       }
+                //     });
+                //     point.properties = {
+                //       name: 'test',
+                //       category: 'miscellaneous'
+                //     };
+                //     var features = geoService.getFeatures();
+                //     features.query(function(arg) {
+                //       point.type = "Feature";
+                //       features.add(point);
+                //       console.log(features);
+                //     });
+                //     console.log(point);
+                //     scope.editButtonModel = '';
+                //     scope.$digest();
+                //     handle.remove();
+                //   });
+                // } else if (btnClicked === 'Right') {
+                //   var handle = vm.view.on('click', function(e) {
+                //     var point = {};
+                //     point.geometry = Terraformer.ArcGIS.parse({
+                //       x: e.mapPoint.x,
+                //       y: e.mapPoint.y,
+                //       spatialReference: {
+                //         wkid: e.mapPoint.spatialReference.wkid
+                //       }
+                //     });
+                //     console.log(point);
+                //     scope.editButtonModel = '';
+                //     scope.$digest();
+                //     handle.remove();
+                //   });
+                // } else {
+                //   return;
+                // }
               });
             }
           };

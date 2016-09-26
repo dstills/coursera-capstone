@@ -47,7 +47,7 @@ angular.module('mapItApp', ['ui.router', 'ui.bootstrap', 'ngResource', 'esri.cor
               center: [-121.500, 38.500],
               zoom: 10,
               ui: {
-                components: ['zoom', 'compass']
+                components: []
               }
             }};
           }
