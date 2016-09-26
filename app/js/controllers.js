@@ -41,10 +41,11 @@ angular.module('mapItApp')
       });
     };
 
-    this.startMap = function() {
+    // this.startMap = function() {
       esriLoader.require([
         'esri/Map',
         'dojo/_base/array',
+        'dojo/dom',
         'esri/layers/FeatureLayer',
         'esri/layers/GraphicsLayer',
         'esri/Graphic',
@@ -61,6 +62,7 @@ angular.module('mapItApp')
       ], function(
         Map,
         array,
+        dom,
         FeatureLayer,
         GraphicsLayer,
         Graphic,
@@ -82,6 +84,12 @@ angular.module('mapItApp')
         $scope.widgets.push(new Compass());
         $scope.widgets.push(new Zoom());
         $scope.widgets.push(new Track());
+        var legend = new Legend({
+          view: this.map.view
+        }, dom.byId('legend'));
+        var search = new Search({
+          view: this.map.view
+        }, dom.byId('search'));
         geoService.getFeatures().query().$promise.then(function(features) {
           var featureLayer = new FeatureLayer({
             source: array.map(features, function(feature) {
@@ -112,13 +120,13 @@ angular.module('mapItApp')
           this.map.add(featureLayer);
         }.bind(this));
       }.bind(this));
-    }
+    // }
 
-    esriLoader.bootstrap({
-      url: '//js.arcgis.com/4.1'
-    }).then(function() {
-      this.startMap();
-    }.bind(this));
+    // esriLoader.bootstrap({
+    //   url: '//js.arcgis.com/4.1'
+    // }).then(function() {
+    //   this.startMap();
+    // }.bind(this));
 
   }])
 
@@ -127,13 +135,11 @@ angular.module('mapItApp')
     var idCount = 0;
     $scope.isOpen = false;
     $scope.panels = [{
-      title: 'First',
-      text: 'This is the first panel',
-      widgetName: 'measure'
+      title: 'Search',
+      widgetName: 'search'
     }, {
-      title: 'Second',
-      text: 'This is the second panel',
-      widgetName: 'name'
+      title: 'Legend',
+      widgetName: 'legend'
     }];
     $scope.panels.map(function(panel) {
       panel.id = idCount;
