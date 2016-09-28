@@ -1,22 +1,44 @@
-<div class="map-modal-properties">
-	<div class="modal-header">
-		<h3 class="modal-title">Add Point</h3>
+<div class="map-modal-properties container-fluid">
+	<div class="modal-header row">
+		<div class="col-xs-10">
+			<h3 class="modal-title">Add Point</h3>
+		</div>
+		<div class="col-xs-2">
+			<button type="button" class="btn" style="float:right;border:none;background:none;" ng-click="cancel()">X</button>
+		</div>
 	</div>
-	<div class="modal-body">
-		<h4>Attribures</h4>
-		<form>
-			<div class="form-group">
-				<label for="featureName">Name</label>
-				<input type="text" class="form-control" id="featureName" placeholder="Enter Name">
-			</div>
-			<div class="form-group">
-				<label for="CategoryName">Category</label>
-				<input type="text" class="form-control" id="CategoryName" placeholder="Enter Category">
-			</div>
-		</form>
-	</div>
-	<div class="modal-footer">
-		<button type="submit" class="btn btn-primary">Add</button>
-		<button type="button" class="btn btn-warning" ng-click="$ctrl.close()">Cancel</button>
+	<div class="modal-body row">
+		<div class="col-xs-12">
+			<h4>Attributes</h4>
+		</div>
+		<div class="col-xs-12">
+			<form class="form-horizontal" role="form" name="attributeForm" ng-submit="submitFeature()">
+				<div class="form-group">
+					<label for="name" class="col-xs-2 control-label">Name</label>
+					<div class="col-xs-10">
+						<input type="text" class="form-control" id="name" placeholder="Enter Name" ng-model="properties.name" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="category" class="col-xs-2 control-label">Category</label>
+					<div class="col-xs-10">
+						<input type="text" class="form-control" id="category" placeholder="Enter Category (lowercase, one word, no spaces)" ng-model="properties.category" required>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="description" class="col-xs-2 control-label">Description</label>
+					<div class="col-xs-10">
+						<input type="text" class="form-control" id="description" placeholder="Enter Description" ng-model="properties.description" required>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<h4>Current submission:</h4>
+					<p>{{properties.name}}</p>
+					<p>{{properties.category.toLowerCase()}}</p>
+					<p>{{properties.description}}</p>
+				</div>
+				<button type="submit" class="btn btn-success btn-block">Submit Feature</button>
+			</form>
+		</div>
 	</div>
 </div>

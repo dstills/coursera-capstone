@@ -8,6 +8,9 @@ $navbar-height: 50px;
 $sidebar-width: 20%;
 $sidebar-toggle-height: 20px;
 
+// BREAKS
+$break-small: 1260px;
+
 // COLOR
 $primary-color: rgb(0, 150, 255);
 $secondary-color: rgb(255, 150, 0);
@@ -87,9 +90,11 @@ html, body, .esri-view {
     position: fixed;
     left: 0;
     top: $navbar-height;
-    bottom: $footer-height;
     width: $sidebar-width;
     z-index: 2;
+    @media screen and (max-width: $break-small) {
+      width: 50%;
+    }
     .map-sidebar-toggle {
       border-radius: 0;
       height: $sidebar-toggle-height;
@@ -98,7 +103,6 @@ html, body, .esri-view {
     }
     .panel-group {
       border-radius: 0;
-      border-right: 1px solid $muted-color;
       background-color: $primary-color;
       margin: 0;
       .panel {

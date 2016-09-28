@@ -6,7 +6,7 @@
     <div uib-accordion-group id="{{panel.id}}" class="panel panel-default" ng-repeat="panel in panels">
       <uib-accordion-heading>
         <a role="presentation" class="panel-title" ng-click="panel.isOpen = !panel.isOpen">
-          {{panel.title}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': panel.isOpen, 'glyphicon-chevron-right': !panel.isOpen}"></i>
+          {{panel.title}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-right': panel.isOpen, 'glyphicon-chevron-down': !panel.isOpen}"></i>
         </a>
       </uib-accordion-heading>
       <div id="{{panel.widgetName}}"></div>
